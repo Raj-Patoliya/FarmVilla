@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmvilla/menubar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -11,6 +12,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  final CollectionReference _products = FirebaseFirestore.instance.collection("product");
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +43,31 @@ class _HomePageState extends State<HomePage> {
           ),
           backgroundColor: const Color.fromARGB(255, 3, 151, 27),
         ),
-        body: const Categories());
+        body: StreamBuilder(
+          stream: _products.snapshots(),
+          builder: (context,AsyncSnapshot<QuerySnapshot> streamSnapshot){
+            if(streamSnapshot.hasData){
+              return ListView.builder(
+                  itemCount: streamSnapshot.data!.docs.length,
+                itemBuilder: (context,index){
+                    final DocumentSnapshot documentSnapshot =
+                        streamSnapshot.data!.docs[index];
+                    return Card(
+                      margin: const EdgeInsets.all(10),
+                      child: ListTile(
+                        title: Text(documentSnapshot['name']),
+                        subtitle: Text(documentSnapshot['age'].toString()),
+                      )
+                    );
+                },
+              );
+            }else
+              {
+                return Text("No Product are to displayed...");
+              }
+          },
+        )
+    );
   }
 }
 
