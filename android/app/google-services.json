@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "96920298554",
+    "project_id": "farm-villa-e528e",
+    "storage_bucket": "farm-villa-e528e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96920298554:android:783ab76c3a390cbca9c103",
+        "android_client_info": {
+          "package_name": "com.example.farmvilla"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "96920298554-l1fkl515k9u86jrv0t9rdst5gntn5r6q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.farmvilla",
+            "certificate_hash": "630ea82111ab9198c950e659cad5ebcd3a30fd58"
+          }
+        },
+        {
+          "client_id": "96920298554-79s3kejtpkjv130la87krru1c64eju2r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxqzZqCevHOfblD2lo5cTfJGjWO3rnL-4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "96920298554-79s3kejtpkjv130la87krru1c64eju2r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
