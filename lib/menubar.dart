@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmvilla/Services/FirebaseServices.dart';
 import 'package:farmvilla/home.dart';
 import 'package:farmvilla/orderScreen.dart';
@@ -16,13 +17,13 @@ class MenuBar extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text(FirebaseAuth.instance!.currentUser?.email  !=null ? FirebaseAuth.instance!.currentUser!.displayName.toString() : "",
-            style: TextStyle(fontSize: 15,color: ),
+            accountName: Text(""),
+            accountEmail: Text(FirebaseAuth.instance!.currentUser?.email  !=null ? FirebaseAuth.instance!.currentUser!.displayName.toString() : "",
+              style:  TextStyle(fontSize: 18),
             ),
-            accountEmail: Text(""),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
-                child:Image.network(FirebaseAuth.instance!.currentUser!.photoURL.toString(),
+                child:Image.network(FirebaseAuth.instance!.currentUser?.email  !=null ? FirebaseAuth.instance!.currentUser!.photoURL.toString(): "",
                   height: 90,
                   width: 90,
                   fit: BoxFit.cover,
@@ -40,13 +41,13 @@ class MenuBar extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.people),
             title: const Text('Profile'),
-            onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context) => const ProfileScreen(),), ),
+            onTap: () => FirebaseServices().isLoggedIn() == true? Navigator.push(context,MaterialPageRoute(builder: (context) => const ProfileScreen(),), ) :{},
           ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.notifications),
             title: const Text('My Orders'), // my order
-            onTap: () => null,
+            onTap: () {},
             trailing: ClipOval(
               child: Container(
                 color: Colors.red,
@@ -82,6 +83,7 @@ class MenuBar extends StatelessWidget {
             onTap: () async{
               FirebaseAuth.instance!.currentUser?.email  !=null ? await FirebaseServices().signOut() :
               await FirebaseServices().signInWithGoogle();
+              Navigator.push(context,MaterialPageRoute(builder: (context) =>  HomePage(),), );
             },
           ),
         ],

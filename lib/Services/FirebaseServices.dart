@@ -33,4 +33,20 @@ class FirebaseServices{
     await _auth.signOut();
     await _googleSignIn.signOut();
   }
+
+  bool isLoggedIn(){
+    if(FirebaseAuth.instance.currentUser!.email != null)
+      {
+        return true;
+      }
+    else
+      {
+        return false;
+      }
+  }
+}
+class UserData{
+  String email =  FirebaseAuth.instance.currentUser!.email.toString();
+  String userName = FirebaseAuth.instance.currentUser!.displayName.toString();
+  String profileUrl = FirebaseAuth.instance.currentUser!.photoURL.toString();
 }

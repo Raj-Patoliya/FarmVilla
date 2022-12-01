@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farmvilla/ProductGrid.dart';
 import 'package:farmvilla/menubar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -14,6 +16,72 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   final CollectionReference _products = FirebaseFirestore.instance.collection("product");
+
+  Widget _gridItemHeader() {
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          FittedBox(
+            child: Text(
+              "Raju Rastogi",
+              overflow: TextOverflow.ellipsis,
+              maxLines: 100,
+              style: TextStyle(
+                  fontSize: 20, color: Color.fromARGB(255, 75, 73, 73)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _gridItemBody() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE5E6E8),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Image.asset("assets/Raju.jpg"),
+    );
+  }
+
+  Widget _gridItemFooter() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        height: 60,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
+          ),
+        ),
+        child:
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children:[
+            const Expanded(child: Center(child: Text('\$100',style: TextStyle(fontSize: 20),))),
+            const VerticalDivider(width: 1.0),
+            Expanded(
+                child: Center(
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child:const Text("Add"),
+                    ))),
+          ],
+        ),
+
+      ),
+    );
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,31 +110,8 @@ class _HomePageState extends State<HomePage> {
           ),
           backgroundColor: const Color.fromARGB(255, 3, 151, 27),
         ),
-        drawer: const MenuBar(),
-        body: StreamBuilder(
-          stream: _products.snapshots(),
-          builder: (context,AsyncSnapshot<QuerySnapshot> streamSnapshot){
-            if(streamSnapshot.hasData){
-              return ListView.builder(
-                  itemCount: streamSnapshot.data!.docs.length,
-                itemBuilder: (context,index){
-                    final DocumentSnapshot documentSnapshot =
-                        streamSnapshot.data!.docs[index];
-                    return Card(
-                      margin: const EdgeInsets.all(10),
-                      child: ListTile(
-                        title: Text(documentSnapshot['name']),
-                        subtitle: Text(documentSnapshot['age'].toString()),
-                      )
-                    );
-                },
-              );
-            }else
-              {
-                return Text("No Product are to displayed...");
-              }
-          },
-        )
+        drawer:const MenuBar(),
+        body: const ProductGrid(),
     );
   }
 }
