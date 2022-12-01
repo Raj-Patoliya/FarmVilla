@@ -1,5 +1,6 @@
 import 'package:farmvilla/Services/FirebaseServices.dart';
 import 'package:farmvilla/home.dart';
+import 'package:farmvilla/orderScreen.dart';
 import 'package:farmvilla/profileScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -15,12 +16,13 @@ class MenuBar extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text(FirebaseAuth.instance!.currentUser?.email  !=null ? FirebaseAuth.instance!.currentUser!.displayName.toString() : ""),
-            accountEmail: Text(FirebaseAuth.instance!.currentUser?.email  !=null ? FirebaseAuth.instance!.currentUser!.email.toString() : ""),
+            accountName: Text(FirebaseAuth.instance!.currentUser?.email  !=null ? FirebaseAuth.instance!.currentUser!.displayName.toString() : "",
+            style: TextStyle(fontSize: 15,color: ),
+            ),
+            accountEmail: Text(""),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
-                child: Image.asset(
-                  "assets/profile_pic.png",
+                child:Image.network(FirebaseAuth.instance!.currentUser!.photoURL.toString(),
                   height: 90,
                   width: 90,
                   fit: BoxFit.cover,
@@ -65,7 +67,7 @@ class MenuBar extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.add_shopping_cart_outlined),
             title: const Text('My Cart'),
-            onTap: () => null,
+            onTap: () =>Navigator.push(context,MaterialPageRoute(builder: (context) => const ProfileScreen2(),), ),
           ),
           const Divider(),
           ListTile(

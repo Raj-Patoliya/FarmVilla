@@ -1,11 +1,23 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmvilla/menubar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+
+  final CollectionReference _userDetails = FirebaseFirestore.instance.collection("userDetails");
+
+  final TextEditingController _mobile = TextEditingController();
+  final TextEditingController _address = TextEditingController();
+  final TextEditingController _pincode = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -27,31 +39,34 @@ class ProfileScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // name text field
-                 Text(FirebaseAuth.instance!.currentUser!.displayName.toString(),
-                  style: TextStyle(fontSize: 25),
-                 ),
+                  Text(FirebaseAuth.instance!.currentUser!.displayName.toString(),
+                    style: TextStyle(fontSize: 25),
+                  ),
                   const SizedBox(height: 15, width: 15),
-                  const TextField(
+                  TextField(
+                    controller: _mobile,
                     decoration: InputDecoration(
                       hintText: "Enter your phone number",
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10))
+                          borderRadius: BorderRadius.all(Radius.circular(10))
                       ),
                     ),
                   ),
                   const SizedBox(height: 20, width: 15),
-                  const TextField(
+                  TextField(
+                  controller: _address,
                     decoration: InputDecoration(
                       hintText: "Enter your full address",
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10))
-                       ),
+                          borderRadius: BorderRadius.all(Radius.circular(10))
+                      ),
                     ),
                     keyboardType: TextInputType.multiline,
                     maxLines: 6,
                   ),
                   const SizedBox(height: 20, width: 30),
-                  const TextField(
+                  TextField(
+                    controller: _pincode,
                     decoration: InputDecoration(
                       hintText: "Pincode",
                       border: OutlineInputBorder(
@@ -64,7 +79,18 @@ class ProfileScreen extends StatelessWidget {
                     height: 75,
                     padding: const EdgeInsets.only(left: 30, right: 30,top: 25),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        if(_address.text !="" && _pincode.text !="" && _mobile.text !="")
+                          {
+                              await _userDetails.add({
+                                "username":FirebaseAuth.instance!.currentUser!.displayName.toString(),
+                                "email":FirebaseAuth.instance!.currentUser!.email .toString(),
+                                "mobile":_mobile.text,
+                                "address":_address.text,
+                                "pincode":_pincode.text
+                              });
+                          }
+                      },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(80.0)),

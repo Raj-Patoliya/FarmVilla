@@ -18,7 +18,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: const MenuBar(),
         appBar: AppBar(
           actions: <Widget>[
             IconButton(
@@ -43,6 +42,7 @@ class _HomePageState extends State<HomePage> {
           ),
           backgroundColor: const Color.fromARGB(255, 3, 151, 27),
         ),
+        drawer: const MenuBar(),
         body: StreamBuilder(
           stream: _products.snapshots(),
           builder: (context,AsyncSnapshot<QuerySnapshot> streamSnapshot){
