@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmvilla/ProductGrid.dart';
+import 'package:farmvilla/cartScreen.dart';
 import 'package:farmvilla/menubar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +97,9 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {},
             ),
             IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context,MaterialPageRoute(builder: (context) => const CartScreen(),), );
+                },
                 icon: const Icon(
                   Icons.shopping_cart,
                   color: Colors.white,

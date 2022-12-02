@@ -38,14 +38,15 @@ class _ProductGridState extends State<ProductGrid> {
     final CollectionReference _collectionRef =  FirebaseFirestore.instance.collection('product');
     QuerySnapshot querySnapshot = await _collectionRef.get();
     // Get data from docs and convert map to List
+
+
+    final QuerySnapshot queryResult = await FirebaseFirestore.instance.collection('product').get();
+
     setState(() {
       productData = querySnapshot.docs.map((doc) => doc.data()).toList();
       countProduct = querySnapshot.docs.length;
       countIterator = countProduct;
-      pId = querySnapshot.docs[0].reference.id;
-      print(pId);
     });
-    print(productData.toString());
   }
   @override
   Widget _gridItemHeader(var cnt) {
@@ -57,7 +58,7 @@ class _ProductGridState extends State<ProductGrid> {
         children:  [
           FittedBox(
             child: Text(
-                productData[cnt]['pname'] !,
+                productData[cnt]['pname']!,
               overflow: TextOverflow.ellipsis,
               maxLines: 100,
               style: TextStyle(
@@ -104,8 +105,11 @@ class _ProductGridState extends State<ProductGrid> {
                     child: ElevatedButton(
                       onPressed: () async{
                           await _cart.add({
-                            "pId" : pId,
+                            "pId" : productData[cnt]['pId'],
+                            'pname':productData[cnt]['pname'],
                             "email":FirebaseAuth.instance!.currentUser!.email .toString(),
+                            'image': productData[cnt]['image'],
+                            'rate':productData[cnt]['rate']
                           });
                       },
                       child:const Text("Add"),

@@ -1,12 +1,55 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmvilla/EmptyCart.dart';
+import 'package:farmvilla/Services/FirebaseServices.dart';
+import 'package:farmvilla/payment.dart';
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // final ProductController controller = Get.put(ProductController());
 const qty = 6;
-int total = 300;
+int total = 0;
 
-class CartScreen extends StatelessWidget {
+
+class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
+
+  @override
+  State<CartScreen> createState() => _CartScreenState();
+}
+class _CartScreenState extends State<CartScreen> {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  final CollectionReference _cart = FirebaseFirestore.instance.collection("cart");
+  var productData;
+  var countIterator;
+  var countProduct;
+  var pId;
+  var userData;
+  @override
+  void initState() {
+    super.initState();
+    getProductForCart();
+  }
+  getProductForCart() async{
+    var cartIds;
+    CollectionReference _collectionRef = FirebaseFirestore.instance.collection('cart');
+    QuerySnapshot querySnapshot = await _collectionRef.where("email", isEqualTo: UserData().email).get();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Get data from docs and convert map to List
+    setState(() {
+      productData = querySnapshot.docs.map((doc) => doc.data()).toList();
+      countProduct = querySnapshot.docs.length;
+      countIterator = countProduct;
+      List<int> temp=[];
+      for(int i=0;i<countProduct;i++)
+        {
+          temp.add(productData[i]['rate'].toInt());
+        }
+      total = temp.sum ;
+      prefs.setInt('totalPayment', total);
+    });
+  }
 
   PreferredSizeWidget _appBar(BuildContext context) {
     return AppBar(
@@ -20,7 +63,7 @@ class CartScreen extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: true,
       padding: const EdgeInsets.all(20),
-      itemCount: qty,
+      itemCount: countProduct,
       itemBuilder: (_, index) {
         // Product product = controller.cartProducts[index];
         return Container(
@@ -42,10 +85,10 @@ class CartScreen extends StatelessWidget {
                   borderRadius: const BorderRadius.all(Radius.circular(20)),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(
-                      "assets/Raju.jpg",
-                      width: 43,
-                      height: 120,
+                    child: Image.network(
+                      productData[index]['image'],
+                      width: 80,
+                      height: 80,
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -57,23 +100,23 @@ class CartScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    const Text(
-                      "Raju bhaiya",
+                    Text(
+                      productData[index]['pname'],
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style:
                       TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
                     ),
                     Text(
-                      "raju bhai ki jay ho",
+                      "Rate Per Quantity",
                       style: TextStyle(
                           color: Colors.black.withOpacity(0.5),
                           fontWeight: FontWeight.w400),
                     ),
                     Text(
-                      '$total',
+                      productData[index]['rate'].toString(),
                       style: const TextStyle(
-                          fontWeight: FontWeight.w900, fontSize: 23),
+                          fontWeight: FontWeight.w900, fontSize: 20),
                     ),
                   ],
                 ),
@@ -149,7 +192,9 @@ class CartScreen extends StatelessWidget {
           padding: const EdgeInsets.only(left: 30, right: 30, bottom: 10),
           child: ElevatedButton(
             child: const Text("Buy Now"),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context,MaterialPageRoute(builder: (context) => const Payment(),), );
+            },
           ),
         ),
       ),

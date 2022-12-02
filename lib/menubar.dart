@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farmvilla/ProductGrid.dart';
 import 'package:farmvilla/Services/FirebaseServices.dart';
+import 'package:farmvilla/cartScreen.dart';
 import 'package:farmvilla/home.dart';
 import 'package:farmvilla/orderScreen.dart';
 import 'package:farmvilla/profileScreen.dart';
@@ -74,7 +76,7 @@ class MenuBar extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.description),
             title: const Text('Policies'),
-            onTap: () => null,
+            onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context) => const ProductGrid(),), ),
           ),
           const Divider(),
           ListTile(
