@@ -2,7 +2,7 @@ import 'package:farmvilla/Services/FirebaseServices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'dart:convert';
 class ProductGrid extends StatefulWidget {
   const ProductGrid({Key? key}) : super(key: key);
 
@@ -16,32 +16,22 @@ class _ProductGridState extends State<ProductGrid> {
   var countIterator;
   var countProduct = 0;
   var pId;
+  var cartItem = [];
+  var cartProductId = [];
   var userData;
   @override
   void initState() {
     super.initState();
-    getUserByEmail();
     getAllProdctGrid();
-  }
-  getUserByEmail() async{
-    var result = await FirebaseFirestore.instance
-        .collection("userDetails")
-        .where("email", isEqualTo: UserData().email)
-        .get();
-    setState(() {
-      userData = result.docs.single.data();
-      print(result.docs[0].reference.id);
-    });
   }
 
   getAllProdctGrid() async{
     final CollectionReference _collectionRef =  FirebaseFirestore.instance.collection('product');
     QuerySnapshot querySnapshot = await _collectionRef.get();
-    // Get data from docs and convert map to List
-
-
-    final QuerySnapshot queryResult = await FirebaseFirestore.instance.collection('product').get();
-
+    for (var snapshot in querySnapshot.docs) {
+      var documentID = snapshot.id; //
+      cartItem.add(documentID);
+    }
     setState(() {
       productData = querySnapshot.docs.map((doc) => doc.data()).toList();
       countProduct = querySnapshot.docs.length;
@@ -125,7 +115,7 @@ class _ProductGridState extends State<ProductGrid> {
                     child: ElevatedButton(
                       onPressed: () async{
                         await _cart.add({
-                          "pId" : FirebaseFirestore.instance.collection('cart').doc().id,
+                          "pId" : cartItem[cnt],
                           'pname':productData[cnt]['pname'],
                           "email":FirebaseAuth.instance!.currentUser!.email .toString(),
                           'image': productData[cnt]['image'],
@@ -149,7 +139,7 @@ class _ProductGridState extends State<ProductGrid> {
         children: [
           Container(child: Row(
             children: [
-              ElevatedButton(onPressed: (){}, child: Text("Jai Siya Ram"),style: Size(), ),
+              ElevatedButton(onPressed: (){}, child: Text("Jai Siya Ram")),
               Padding(padding: EdgeInsets.all(10)),
               ElevatedButton(onPressed: (){}, child: Text("Jai Siya Ram"))
             ],

@@ -1,96 +1,141 @@
-import 'dart:developer';
-import 'dart:convert';
-import 'package:farmvilla/Services/FirebaseServices.dart';
-import 'package:farmvilla/menubar.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:http/http.dart' as http;
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farmvilla/EmptyCart.dart';
+import 'package:farmvilla/Services/FirebaseServices.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+// final ProductController controller = Get.put(ProductController());
+const qty = 3;
+int total = 300;
 
-class ProfileScreen2 extends StatefulWidget {
-  const ProfileScreen2({Key? key}) : super(key: key);
+class OrderScreen extends StatefulWidget {
+  const OrderScreen({Key? key}) : super(key: key);
 
   @override
-  State<ProfileScreen2> createState() => _ProfileScreen2State();
+  State<OrderScreen> createState() => _OrderScreenState();
 }
 
+class _OrderScreenState extends State<OrderScreen> {
 
-
-class _ProfileScreen2State extends State<ProfileScreen2> {
-
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  final CollectionReference _cart = FirebaseFirestore.instance.collection("order");
+  var productData;
+  var countIterator;
+  var countProduct = 0;
+  var pId;
+  var cartItem = [];
+  var cartProductId = [];
   var userData;
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    getUserByEmail();
+    getOrderList();
   }
-  getUserByEmail() async{
-    var result = await FirebaseFirestore.instance
-        .collection("userDetails")
-        .where("email", isEqualTo: UserData().email)
-        .get();
+  getOrderList () async {
+    CollectionReference _collectionRef = FirebaseFirestore.instance.collection('order');
+    QuerySnapshot querySnapshot = await _collectionRef.where("email", isEqualTo: UserData().email).get();
     setState(() {
-      userData = result.docs.single.data();
+      productData = querySnapshot.docs.map((doc) => doc.data()).toList();
+      countProduct = querySnapshot.docs.length;
+      countIterator = countProduct;
     });
+    print(countProduct);
+  }
+
+
+  PreferredSizeWidget _appBar(BuildContext context) {
+    return AppBar(
+      title:const Text(
+        "My Order",
+      ),
+    );
+  }
+
+  Widget orderListView() {
+    return ListView.builder(
+      shrinkWrap: true,
+      padding: const EdgeInsets.all(20),
+      itemCount: countProduct,
+      itemBuilder: (_, index) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.all(15),
+          height: 120,
+          decoration: BoxDecoration(
+              color: Colors.grey[200]?.withOpacity(0.6),
+              borderRadius: BorderRadius.circular(10)),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10),
+
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      productData[index]['username'].toString(),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600, fontSize: 15),
+                    ),
+                    Text(
+                      'Order of '+productData[index]['orderDate'].toString(),
+                      style: TextStyle(
+                          color: Colors.black.withOpacity(0.5),
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ],
+
+                ),
+
+              ),
+
+              const Spacer(),
+              SizedBox(width: 30, height:100,child:
+              IconButton(
+                  icon: Icon(Icons.arrow_forward_ios),
+                  onPressed: (){
+                    print("Hello");
+                  },
+              )
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget bottomBarTitle() {
+    return Expanded(
+      flex: 1,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Profile",
-          style: TextStyle(
-            color: Color.fromARGB(255, 201, 245, 120),
-          ),
-        ),
-        backgroundColor: const Color.fromARGB(255, 3, 151, 27),
-      ),
+      appBar: _appBar(context),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            child: ClipOval(
-              child:Image.network(FirebaseAuth.instance!.currentUser!.photoURL.toString(),
-                height: 90,
-                width: 90,
-                fit: BoxFit.cover,
-              ),
-            ),
+          Expanded(
+            flex: 10,
+            child: qty > 0 ? orderListView() : const EmptyCart(),
           ),
-           Text(
-            userData['username'],
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                userData['address'],
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              const SizedBox(width: 10),
-            ],
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: Colors.green,
-              onPrimary: Colors.white,
-              shadowColor: Colors.greenAccent,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(23.0)),
-              minimumSize: Size(340, 40), //////// HERE
-            ),
-            child: const Text("Button"),
-            onPressed: () async  {
-            },
-          ),
+          bottomBarTitle(),
         ],
       ),
     );
   }
 }
-
-

@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmvilla/EmptyCart.dart';
 import 'package:farmvilla/Services/FirebaseServices.dart';
+import 'package:farmvilla/deliveryDetails.dart';
+import 'package:farmvilla/payment.dart';
 // import 'package:farmvilla/payment.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
-// final ProductController controller = Get.put(ProductController());
 const qty = 6;
 int total = 0;
 
@@ -25,6 +26,8 @@ class _CartScreenState extends State<CartScreen> {
   var countIterator;
   var countProduct = 0;
   var pId;
+  var cartItem = [];
+  var cartProductId = [];
   var userData;
   @override
   void initState() {
@@ -36,7 +39,17 @@ class _CartScreenState extends State<CartScreen> {
     CollectionReference _collectionRef = FirebaseFirestore.instance.collection('cart');
     QuerySnapshot querySnapshot = await _collectionRef.where("email", isEqualTo: UserData().email).get();
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
+    int i = 0;
+    for (var snapshot in querySnapshot.docs) {
+      var documentID = snapshot.id; //
+      cartItem.add(documentID);
+      prefs.setString(i.toString(),documentID.toString());
+      i++;
+    }
+    prefs.setInt('cartItemCount', cartItem.length);
+    print(cartItem.length);
+    print(cartItem);
+    print('hello');
     // Get data from docs and convert map to List
     setState(() {
       productData = querySnapshot.docs.map((doc) => doc.data()).toList();
@@ -45,11 +58,16 @@ class _CartScreenState extends State<CartScreen> {
       List<int> temp=[];
       for(int i=0;i<countProduct;i++)
         {
+          cartProductId.add(productData[i]['pId'].toString());
+          prefs.setString('productId'+i.toString(),productData[i]['pId'].toString());
           temp.add(productData[i]['rate'].toInt());
         }
+      print(cartProductId);
       total = temp.sum ;
       prefs.setInt('totalPayment', total);
     });
+
+
   }
 
   PreferredSizeWidget _appBar(BuildContext context) {
@@ -61,7 +79,7 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget cartListView() {
-    return ListView.builder(
+    return cartItem ==  null ? const EmptyCart():ListView.builder(
       shrinkWrap: true,
       padding: const EdgeInsets.all(20),
       itemCount: countProduct,
@@ -131,7 +149,11 @@ class _CartScreenState extends State<CartScreen> {
                   children: [
                     IconButton(
                       splashRadius: 10.0,
-                      onPressed: () =>{},
+                      onPressed: () async {
+                        print(cartItem[index]);
+                        await FirebaseFirestore.instance.collection("cart").doc(cartItem[index]).delete();
+                        await Navigator.push(context,MaterialPageRoute(builder: (context) => const CartScreen(),), );
+                        },
                       icon: const Icon(
                         Icons.delete,
                         color: Color(0xFFEC6813),
@@ -194,7 +216,7 @@ class _CartScreenState extends State<CartScreen> {
           child: ElevatedButton(
             child: const Text("Buy Now"),
             onPressed: () {
-              // Navigator.push(context,MaterialPageRoute(builder: (context) => const Payment(),), );
+              Navigator.push(context,MaterialPageRoute(builder: (context) => const DeliverDetails(),), );
             },
           ),
         ),

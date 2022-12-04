@@ -67,7 +67,12 @@ class _MenuBarState extends State<MenuBar> {
           ListTile(
             leading: const Icon(Icons.notifications),
             title: const Text('My Orders'), // my order
-            onTap: () {},
+            onTap: () async {
+              FirebaseAuth.instance!.currentUser?.email  !=null ?
+              Navigator.push(context,MaterialPageRoute(builder: (context) =>  OrderScreen(),), )
+              :
+              null;
+            },
             trailing: ClipOval(
               child: Container(
                 color: Colors.red,
@@ -102,9 +107,8 @@ class _MenuBarState extends State<MenuBar> {
             title: Text(FirebaseAuth.instance!.currentUser?.email  !=null ? "Logout" : "SignIn with Google"),
             onTap: () async{
               FirebaseAuth.instance!.currentUser?.email  !=null ?
-              await FirebaseServices().signOut():
-              Navigator.push(context,MaterialPageRoute(builder: (context) =>  HomePage(),), );
-              await FirebaseServices().signInWithGoogle();
+              await FirebaseServices().signOut()
+              : await FirebaseServices().signInWithGoogle();
               Navigator.push(context,MaterialPageRoute(builder: (context) =>  HomePage(),), );
             },
           ),
