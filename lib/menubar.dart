@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farmvilla/EmptyCart.dart';
 import 'package:farmvilla/ProductGrid.dart';
 import 'package:farmvilla/Services/FirebaseServices.dart';
 import 'package:farmvilla/cartScreen.dart';
@@ -10,8 +11,20 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class MenuBar extends StatelessWidget {
-  const MenuBar({super.key});
+class MenuBar extends StatefulWidget {
+  const MenuBar({Key? key}) : super(key: key);
+
+  @override
+  State<MenuBar> createState() => _MenuBarState();
+}
+
+class _MenuBarState extends State<MenuBar> {
+
+  @override
+  void initState() {
+
+
+  }
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -25,7 +38,12 @@ class MenuBar extends StatelessWidget {
             ),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
-                child:Image.network(FirebaseAuth.instance!.currentUser?.email  !=null ? FirebaseAuth.instance!.currentUser!.photoURL.toString(): "",
+                child: FirebaseAuth.instance!.currentUser?.email  == null ?
+                Image.asset("assets/profile_pic.png",
+                  height: 90,
+                  width: 90,
+                  fit: BoxFit.cover,) :
+                Image.network( FirebaseAuth.instance!.currentUser!.photoURL.toString(),
                   height: 90,
                   width: 90,
                   fit: BoxFit.cover,
@@ -70,20 +88,22 @@ class MenuBar extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.add_shopping_cart_outlined),
             title: const Text('My Cart'),
-            onTap: () =>Navigator.push(context,MaterialPageRoute(builder: (context) => const ProfileScreen2(),), ),
+            onTap: () =>FirebaseServices()?.isLoggedIn() == true ? Navigator.push(context,MaterialPageRoute(builder: (context) => const CartScreen(),), ) :Navigator.push(context,MaterialPageRoute(builder: (context) => const EmptyCart()),),
           ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.description),
             title: const Text('Policies'),
-            onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context) => const ProductGrid(),), ),
+            onTap: () =>{},
           ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.exit_to_app),
             title: Text(FirebaseAuth.instance!.currentUser?.email  !=null ? "Logout" : "SignIn with Google"),
             onTap: () async{
-              FirebaseAuth.instance!.currentUser?.email  !=null ? await FirebaseServices().signOut() :
+              FirebaseAuth.instance!.currentUser?.email  !=null ?
+              await FirebaseServices().signOut():
+              Navigator.push(context,MaterialPageRoute(builder: (context) =>  HomePage(),), );
               await FirebaseServices().signInWithGoogle();
               Navigator.push(context,MaterialPageRoute(builder: (context) =>  HomePage(),), );
             },
@@ -93,3 +113,4 @@ class MenuBar extends StatelessWidget {
     );
   }
 }
+

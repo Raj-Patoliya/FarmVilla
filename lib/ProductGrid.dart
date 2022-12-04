@@ -14,7 +14,7 @@ class _ProductGridState extends State<ProductGrid> {
   final CollectionReference _cart = FirebaseFirestore.instance.collection("cart");
   var productData;
   var countIterator;
-  var countProduct;
+  var countProduct = 0;
   var pId;
   var userData;
   @override
@@ -51,33 +51,53 @@ class _ProductGridState extends State<ProductGrid> {
   @override
   Widget _gridItemHeader(var cnt) {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children:  [
-          FittedBox(
-            child: Text(
-                productData[cnt]['pname']!,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 100,
-              style: TextStyle(
-                  fontSize: 20, color: Color.fromARGB(255, 75, 73, 73)),
-            ),
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        height: 50,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(15),
+            topRight: Radius.circular(15),
           ),
-        ],
+        ),
+        padding: const EdgeInsets.only(top: 10) ,
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children:  [
+              FittedBox(
+                child: Text(
+                  productData[cnt]['pname']!,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 100,
+                  style: const TextStyle(
+                      fontSize: 20, color: Color.fromARGB(255, 75, 73, 73)),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _gridItemBody(var cnt) {
     return Container(
+      height: 60,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: const Color(0xFFE5E6E8),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Image.network(productData[cnt]['image']),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 15.0,bottom: 15.0),
+        child: SizedBox(
+            height: 60,
+            width: 60,
+            child: Image.network(productData[cnt]['image'],fit: BoxFit.cover,)),
+      ),
+
     );
   }
 
@@ -98,19 +118,19 @@ class _ProductGridState extends State<ProductGrid> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children:[
-             Expanded(child: Center(child: Text('\$ ${productData[cnt]['rate']}',style: TextStyle(fontSize: 20),))),
+            Expanded(child: Center(child: Text('\$ ${productData[cnt]['rate']}',style: TextStyle(fontSize: 20),))),
             const VerticalDivider(width: 1.0),
             Expanded(
                 child: Center(
                     child: ElevatedButton(
                       onPressed: () async{
-                          await _cart.add({
-                            "pId" : productData[cnt]['pId'],
-                            'pname':productData[cnt]['pname'],
-                            "email":FirebaseAuth.instance!.currentUser!.email .toString(),
-                            'image': productData[cnt]['image'],
-                            'rate':productData[cnt]['rate']
-                          });
+                        await _cart.add({
+                          "pId" : FirebaseFirestore.instance.collection('cart').doc().id,
+                          'pname':productData[cnt]['pname'],
+                          "email":FirebaseAuth.instance!.currentUser!.email .toString(),
+                          'image': productData[cnt]['image'],
+                          'rate':productData[cnt]['rate']
+                        });
                       },
                       child:const Text("Add"),
                     ))),
@@ -124,21 +144,35 @@ class _ProductGridState extends State<ProductGrid> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 20),
-      child: GridView.builder(
-        itemCount: countProduct,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            childAspectRatio: 10 / 16,
-            crossAxisCount: 2,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10),
-        itemBuilder: (_, index) {
-          // Product product = controller.filteredProducts[index];
-          return GridTile(
-            header: _gridItemHeader(index),
-            footer: _gridItemFooter(index),
-            child: _gridItemBody(index),
-          );
-        },
+      child:
+      Column(
+        children: [
+          Container(child: Row(
+            children: [
+              ElevatedButton(onPressed: (){}, child: Text("Jai Siya Ram"),style: Size(), ),
+              Padding(padding: EdgeInsets.all(10)),
+              ElevatedButton(onPressed: (){}, child: Text("Jai Siya Ram"))
+            ],
+          ),),
+          Flexible(
+            child: GridView.builder(
+              itemCount: countProduct,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  childAspectRatio: 10 / 16,
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10),
+              itemBuilder: (_, index) {
+                // Product product = controller.filteredProducts[index];
+                return countProduct == 0 ? const Center(child:  CircularProgressIndicator(),) : GridTile(
+                  header: _gridItemHeader(index),
+                  footer: _gridItemFooter(index),
+                  child: _gridItemBody(index),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

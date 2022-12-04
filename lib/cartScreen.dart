@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmvilla/EmptyCart.dart';
 import 'package:farmvilla/Services/FirebaseServices.dart';
-import 'package:farmvilla/payment.dart';
+// import 'package:farmvilla/payment.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 
 // final ProductController controller = Get.put(ProductController());
 const qty = 6;
@@ -22,7 +23,7 @@ class _CartScreenState extends State<CartScreen> {
   final CollectionReference _cart = FirebaseFirestore.instance.collection("cart");
   var productData;
   var countIterator;
-  var countProduct;
+  var countProduct = 0;
   var pId;
   var userData;
   @override
@@ -87,7 +88,7 @@ class _CartScreenState extends State<CartScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: Image.network(
                       productData[index]['image'],
-                      width: 80,
+                      width: 50,
                       height: 80,
                       fit: BoxFit.contain,
                     ),
@@ -108,7 +109,7 @@ class _CartScreenState extends State<CartScreen> {
                       TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
                     ),
                     Text(
-                      "Rate Per Quantity",
+                      "Rate Per 1kg",
                       style: TextStyle(
                           color: Colors.black.withOpacity(0.5),
                           fontWeight: FontWeight.w400),
@@ -130,25 +131,25 @@ class _CartScreenState extends State<CartScreen> {
                   children: [
                     IconButton(
                       splashRadius: 10.0,
-                      onPressed: () => {},
+                      onPressed: () =>{},
                       icon: const Icon(
-                        Icons.remove,
+                        Icons.delete,
                         color: Color(0xFFEC6813),
                       ),
                     ),
-                    const Text(
-                      '1',
-                      style:
-                      TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                    ),
-                    IconButton(
-                      splashRadius: 10.0,
-                      onPressed: () => {},
-                      icon: const Icon(
-                        Icons.add,
-                        color: Color(0xFFEC6813),
-                      ),
-                    ),
+                    // const Text(
+                    //   'remove',
+                    //   style:
+                    //   TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                    // ),
+                    // IconButton(
+                    //   splashRadius: 10.0,
+                    //   onPressed: () => {},
+                    //   icon: const Icon(
+                    //     Icons.add,
+                    //     color: Color(0xFFEC6813),
+                    //   ),
+                    // ),
                   ],
                 ),
               )
@@ -193,7 +194,7 @@ class _CartScreenState extends State<CartScreen> {
           child: ElevatedButton(
             child: const Text("Buy Now"),
             onPressed: () {
-              Navigator.push(context,MaterialPageRoute(builder: (context) => const Payment(),), );
+              // Navigator.push(context,MaterialPageRoute(builder: (context) => const Payment(),), );
             },
           ),
         ),
@@ -205,7 +206,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(context),
-      body: Column(
+      body: countProduct == 0 ? const Center(child:  CircularProgressIndicator(),) :  Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(

@@ -35,7 +35,7 @@ class FirebaseServices{
   }
 
   bool isLoggedIn(){
-    if(FirebaseAuth.instance.currentUser!.email != null)
+    if(FirebaseAuth.instance.currentUser?.email != null)
       {
         return true;
       }
@@ -46,7 +46,10 @@ class FirebaseServices{
   }
 }
 class UserData{
-  String email =  FirebaseAuth.instance.currentUser!.email.toString();
+
+  // var cR = FirebaseAuth.instance.currentUser;
+
+  String email =  FirebaseAuth.instance!.currentUser!.email.toString();
   String userName = FirebaseAuth.instance.currentUser!.displayName.toString();
   String profileUrl = FirebaseAuth.instance.currentUser!.photoURL.toString();
 }

@@ -16,86 +16,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  final CollectionReference _products = FirebaseFirestore.instance.collection("product");
-
-  Widget _gridItemHeader() {
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          FittedBox(
-            child: Text(
-              "Raju Rastogi",
-              overflow: TextOverflow.ellipsis,
-              maxLines: 100,
-              style: TextStyle(
-                  fontSize: 20, color: Color.fromARGB(255, 75, 73, 73)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _gridItemBody() {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE5E6E8),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Image.asset("assets/Raju.jpg"),
-    );
-  }
-
-  Widget _gridItemFooter() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        height: 60,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(15),
-            bottomRight: Radius.circular(15),
-          ),
-        ),
-        child:
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children:[
-            const Expanded(child: Center(child: Text('\$100',style: TextStyle(fontSize: 20),))),
-            const VerticalDivider(width: 1.0),
-            Expanded(
-                child: Center(
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      child:const Text("Add"),
-                    ))),
-          ],
-        ),
-
-      ),
-    );
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           actions: <Widget>[
-            IconButton(
-              icon: const Icon(
-                Icons.search,
-                color: Colors.white,
-              ),
-              onPressed: () {},
-            ),
             IconButton(
                 onPressed: () {
                   Navigator.push(context,MaterialPageRoute(builder: (context) => const CartScreen(),), );
@@ -106,7 +32,7 @@ class _HomePageState extends State<HomePage> {
                 ))
           ],
           title: const Text(
-            "Farmer Home Page",
+            "FarmVilla",
             style: TextStyle(
               color: Color.fromARGB(255, 201, 245, 120),
             ),
@@ -115,6 +41,8 @@ class _HomePageState extends State<HomePage> {
         ),
         drawer:const MenuBar(),
         body: const ProductGrid(),
+
+
     );
   }
 }
@@ -139,20 +67,6 @@ class _CategoriesState extends State<Categories> {
           itemBuilder: (context, index) => subCategories(index)),
     );
   }
-
-  // Widget subCategories(int index) {
-  //   return Center(
-  //     child: ButtonBar(
-  //       mainAxisSize: MainAxisSize.min, // this will take space as minimum as posible(to center)
-  //       children:[
-  //         new RaisedButton(
-  //             child: new Text('Hello'),
-  //             onPressed: null,
-  //           ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget subCategories(int index){
     return Padding(
