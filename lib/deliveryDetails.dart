@@ -118,7 +118,7 @@ class _DeliverDetailsState extends State<DeliverDetails> {
                             "mobile": _mobile.text,
                             "address": _address.text,
                             "pincode": _pincode.text,
-                            "totalPayment":totalPayment,
+                            "totalPayment":totalPayment+60,
                             "cartItems":lst,
                             'orderDate':now.day.toString()+' Dec 2022',
                             'deliveryDate':(now.day + 1).toString()+' Dec 2022'

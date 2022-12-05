@@ -73,21 +73,6 @@ class _MenuBarState extends State<MenuBar> {
               :
               null;
             },
-            trailing: ClipOval(
-              child: Container(
-                color: Colors.red,
-                width: 20,
-                height: 20,
-                child: const Center(
-                  child: Text("2",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ),
           const Divider(),
           ListTile(

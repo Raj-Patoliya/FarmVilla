@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmvilla/EmptyCart.dart';
 import 'package:farmvilla/Services/FirebaseServices.dart';
+import 'package:farmvilla/detailedOrder.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // final ProductController controller = Get.put(ProductController());
 const qty = 3;
 int total = 300;
-
 class OrderScreen extends StatefulWidget {
   const OrderScreen({Key? key}) : super(key: key);
 
@@ -16,8 +16,6 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
-
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   final CollectionReference _cart = FirebaseFirestore.instance.collection("order");
   var productData;
   var countIterator;
@@ -25,22 +23,35 @@ class _OrderScreenState extends State<OrderScreen> {
   var pId;
   var cartItem = [];
   var cartProductId = [];
-  var userData;
+  var orderId = [];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getOrderList();
   }
+
+  getOrderId(String orderId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('orderId', orderId);
+  }
+
   getOrderList () async {
     CollectionReference _collectionRef = FirebaseFirestore.instance.collection('order');
     QuerySnapshot querySnapshot = await _collectionRef.where("email", isEqualTo: UserData().email).get();
+
     setState(() {
       productData = querySnapshot.docs.map((doc) => doc.data()).toList();
       countProduct = querySnapshot.docs.length;
       countIterator = countProduct;
+      int i =0;
+      for (var snapshot in querySnapshot.docs) {
+        var documentID = snapshot.id; //
+        orderId.add(documentID);
+        i++;
+      }
+      print(orderId);
     });
-    print(countProduct);
   }
 
 
@@ -99,8 +110,9 @@ class _OrderScreenState extends State<OrderScreen> {
               IconButton(
                   icon: Icon(Icons.arrow_forward_ios),
                   onPressed: (){
-                    print("Hello");
-                  },
+                    getOrderId(orderId[index].toString());
+                    Navigator.push(context,MaterialPageRoute(builder: (context) => const DetailedOder(),), );
+                    },
               )
               ),
             ],

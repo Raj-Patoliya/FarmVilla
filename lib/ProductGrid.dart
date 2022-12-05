@@ -137,13 +137,13 @@ class _ProductGridState extends State<ProductGrid> {
       child:
       Column(
         children: [
-          Container(child: Row(
-            children: [
-              ElevatedButton(onPressed: (){}, child: Text("Jai Siya Ram")),
-              Padding(padding: EdgeInsets.all(10)),
-              ElevatedButton(onPressed: (){}, child: Text("Jai Siya Ram"))
-            ],
-          ),),
+          // Container(child: Row(
+          //   children: [
+          //     ElevatedButton(onPressed: (){}, child: Text("Jai Siya Ram")),
+          //     Padding(padding: EdgeInsets.all(10)),
+          //     ElevatedButton(onPressed: (){}, child: Text("Jai Siya Ram"))
+          //   ],
+          // ),),
           Flexible(
             child: GridView.builder(
               itemCount: countProduct,
