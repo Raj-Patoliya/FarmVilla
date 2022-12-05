@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmvilla/EmptyCart.dart';
+import 'package:farmvilla/Policy.dart';
 import 'package:farmvilla/ProductGrid.dart';
 import 'package:farmvilla/Services/FirebaseServices.dart';
 import 'package:farmvilla/cartScreen.dart';
@@ -84,7 +85,9 @@ class _MenuBarState extends State<MenuBar> {
           ListTile(
             leading: const Icon(Icons.description),
             title: const Text('Policies'),
-            onTap: () =>{},
+            onTap: () {
+              Navigator.push(context,MaterialPageRoute(builder: (context) => const Policy(),), );
+            },
           ),
           const Divider(),
           ListTile(

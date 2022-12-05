@@ -12,6 +12,7 @@ class DetailedOder extends StatefulWidget {
 var itemLength  = 0;
 int total = 300;
 var orderData ;
+int qty = 0;
 var orderItemData = [];
 class _DetailedOderState extends State<DetailedOder> {
 
@@ -41,7 +42,10 @@ class _DetailedOderState extends State<DetailedOder> {
         DocumentReference doc_ref= FirebaseFirestore.instance.collection("product").doc(orderData['cartItems'][i]);
         DocumentSnapshot docSnap = await doc_ref.get();
         orderItemData.add(docSnap.data());
+
       }
+
+
   }
 
   PreferredSizeWidget _appBar(BuildContext context) {
@@ -77,8 +81,8 @@ class _DetailedOderState extends State<DetailedOder> {
                   borderRadius: const BorderRadius.all(Radius.circular(20)),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(
-                      "assets/profile_pic.png",
+                    child: Image.network(
+                      orderItemData[index]['image'].toString(),
                       width: 43,
                       height: 120,
                       fit: BoxFit.contain,
@@ -92,15 +96,15 @@ class _DetailedOderState extends State<DetailedOder> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    const Text(
-                      "Babu bhaiya",
+                    Text(
+                      orderItemData[index]['pname'].toString(),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontWeight: FontWeight.w600, fontSize: 15),
                     ),
                     Text(
-                      "babu bhiya bare sayane",
+                        "Rs. "+orderItemData[index]['rate'].toString() ,
                       style: TextStyle(
                           color: Colors.black.withOpacity(0.5),
                           fontWeight: FontWeight.w400),

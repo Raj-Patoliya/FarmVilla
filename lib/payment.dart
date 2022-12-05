@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmvilla/EmptyCart.dart';
 import 'package:farmvilla/Services/FirebaseServices.dart';
+import 'package:farmvilla/orderScreen.dart';
 import 'package:farmvilla/payment.dart';
 // import 'package:farmvilla/payment.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,21 @@ class PaymentPage extends StatefulWidget {
 
 class _PaymentPageState extends State<PaymentPage> {
   int _counter = 0;
+  int totalPayemt = 0;
+  var deliveryCharege = 70;
+  @override
+  void initState() {
+    super.initState();
+    getPaymentDetails();
+  }
+  getPaymentDetails() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      totalPayemt = prefs.getInt('totalPayment') ?? 0;
+    });
+  }
+
+
   @override
   PreferredSizeWidget _appBar(BuildContext context) {
     return AppBar(
@@ -68,19 +84,25 @@ class _PaymentPageState extends State<PaymentPage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Text(
+                'FarmVilla', style: TextStyle(fontSize: 30)
+            ),
+            Text(
+              'Total Bill Amount : '+totalPayemt.toString(), style: TextStyle(fontSize: 20)
+            ),
             const Text(
-              'Pay with Razorpay',
+              'Delivery Charge  : 70',style: TextStyle(fontSize: 20),
             ),
             ElevatedButton(onPressed: (){
               Razorpay razorpay = Razorpay();
               var options = {
-                'key': 'rzp_live_ILgsfZCZoFIKMb',
-                'amount': 100,
-                'name': 'Acme Corp.',
-                'description': 'Fine T-Shirt',
+                'key': 'rzp_test_jjvsGXFskAudUM',
+                'amount': (totalPayemt+70)*100,
+                'name': 'FarmVilla',
+                'description': 'Farm Fresh Fruits',
                 'retry': {'enabled': true, 'max_count': 1},
                 'send_sms_hash': true,
-                'prefill': {'contact': '7383309980', 'email': 'test@razorpay.com'},
+                'prefill': {'contact': '7383309980', 'email': 'kumkum@razorpay.com'},
                 'external': {
                   'wallets': ['paytm']
                 }
@@ -119,7 +141,7 @@ class _PaymentPageState extends State<PaymentPage> {
     * 2. Payment ID
     * 3. Signature
     * */
-    showAlertDialog(context, "Payment Successful", "Payment ID: ${response.paymentId}");
+    Navigator.push(context,MaterialPageRoute(builder: (context) => const OrderScreen(),), );
   }
 
   void handleExternalWalletSelected(ExternalWalletResponse response){
