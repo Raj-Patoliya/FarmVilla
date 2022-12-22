@@ -35,9 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _address.text = userDetails[0]["address"];
     _pincode.text = userDetails[0]["pincode"];
     setState(() {
-
     });
-
   }
   @override
   Widget build(BuildContext context) {
