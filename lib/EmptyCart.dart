@@ -7,9 +7,6 @@ class EmptyCart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("Empty cart"),
-      ),
       body: Container(
         child: Center(
             child:Image.network('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScR-7iXnuAAkR6HYqBrsXosDMv1EipL5ybNHaVef_T8A&s')

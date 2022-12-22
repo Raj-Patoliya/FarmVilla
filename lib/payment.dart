@@ -141,6 +141,9 @@ class _PaymentPageState extends State<PaymentPage> {
     * 2. Payment ID
     * 3. Signature
     * */
+
+    int count = 0;
+    Navigator.of(context).popUntil((_) => count++ >= 3);
     Navigator.push(context,MaterialPageRoute(builder: (context) => const OrderScreen(),), );
   }
 

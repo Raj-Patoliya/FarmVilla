@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:farmvilla/Services/FirebaseServices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,16 +11,19 @@ class ProductGrid extends StatefulWidget {
   @override
   State<ProductGrid> createState() => _ProductGridState();
 }
-
+var productData;
 class _ProductGridState extends State<ProductGrid> {
   final CollectionReference _cart = FirebaseFirestore.instance.collection("cart");
-  var productData;
+
   var countIterator;
   var countProduct = 0;
   var pId;
   var cartItem = [];
   var cartProductId = [];
+  var tempProductData=[];
+  var tempProductCount=0;
   var userData;
+  var newValueForSearch = '';
   @override
   void initState() {
     super.initState();
@@ -36,8 +41,30 @@ class _ProductGridState extends State<ProductGrid> {
       productData = querySnapshot.docs.map((doc) => doc.data()).toList();
       countProduct = querySnapshot.docs.length;
       countIterator = countProduct;
+      tempProductData = productData;
+      tempProductCount = countProduct;
     });
   }
+  final TextEditingController _searchQuery = TextEditingController();
+  onSearchGridView(String s){
+    if (s.isEmpty) {
+      setState(() {
+        tempProductData = productData;
+        tempProductCount = countProduct;
+      });
+    } else {
+      setState(() {
+        tempProductData = productData;
+        tempProductData = tempProductData.where((element) =>
+        element["pname"].toLowerCase().contains(s.toLowerCase()) ||
+            element["pname"].toLowerCase().contains(s.toLowerCase()))
+            .toList();
+        tempProductCount = tempProductData.length;
+      });
+
+    }
+  }
+
   @override
   Widget _gridItemHeader(var cnt) {
     return Padding(
@@ -58,7 +85,7 @@ class _ProductGridState extends State<ProductGrid> {
             children:  [
               FittedBox(
                 child: Text(
-                  productData[cnt]['pname']!,
+                  tempProductData[cnt]['pname']!,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 100,
                   style: const TextStyle(
@@ -85,7 +112,7 @@ class _ProductGridState extends State<ProductGrid> {
         child: SizedBox(
             height: 60,
             width: 60,
-            child: Image.network(productData[cnt]['image'],fit: BoxFit.cover,)),
+            child: Image.network(tempProductData[cnt]['image'],fit: BoxFit.cover,)),
       ),
 
     );
@@ -108,7 +135,7 @@ class _ProductGridState extends State<ProductGrid> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children:[
-            Expanded(child: Center(child: Text('\$ ${productData[cnt]['rate']}',style: TextStyle(fontSize: 20),))),
+            Expanded(child: Center(child: Text('\$ ${tempProductData[cnt]['rate']}',style: TextStyle(fontSize: 20),))),
             const VerticalDivider(width: 1.0),
             Expanded(
                 child: Center(
@@ -116,10 +143,10 @@ class _ProductGridState extends State<ProductGrid> {
                       onPressed: () async{
                         await _cart.add({
                           "pId" : cartItem[cnt],
-                          'pname':productData[cnt]['pname'],
+                          'pname':tempProductData[cnt]['pname'],
                           "email":FirebaseAuth.instance!.currentUser!.email .toString(),
-                          'image': productData[cnt]['image'],
-                          'rate':productData[cnt]['rate']
+                          'image': tempProductData[cnt]['image'],
+                          'rate':tempProductData[cnt]['rate']
                         });
                       },
                       child:const Text("Add"),
@@ -137,6 +164,21 @@ class _ProductGridState extends State<ProductGrid> {
       child:
       Column(
         children: [
+
+          TextField(
+            controller: _searchQuery,
+            decoration: InputDecoration(
+              hintText: 'Enter a message',
+
+            ),
+            onChanged: (value) {
+              setState(() {
+                onSearchGridView(value);
+              });
+            },
+      ),
+
+
           // Container(child: Row(
           //   children: [
           //     ElevatedButton(onPressed: (){}, child: Text("Jai Siya Ram")),
@@ -146,7 +188,7 @@ class _ProductGridState extends State<ProductGrid> {
           // ),),
           Flexible(
             child: GridView.builder(
-              itemCount: countProduct,
+              itemCount: tempProductCount,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   childAspectRatio: 10 / 16,
                   crossAxisCount: 2,
@@ -154,7 +196,7 @@ class _ProductGridState extends State<ProductGrid> {
                   crossAxisSpacing: 10),
               itemBuilder: (_, index) {
                 // Product product = controller.filteredProducts[index];
-                return countProduct == 0 ? const Center(child:  CircularProgressIndicator(),) : GridTile(
+                return tempProductCount == 0 ? const Center(child:  CircularProgressIndicator(),) : GridTile(
                   header: _gridItemHeader(index),
                   footer: _gridItemFooter(index),
                   child: _gridItemBody(index),

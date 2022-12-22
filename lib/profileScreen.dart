@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farmvilla/Services/FirebaseServices.dart';
 import 'package:farmvilla/menubar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,11 +15,30 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
 
   final CollectionReference _userDetails = FirebaseFirestore.instance.collection("userDetails");
-
+  var userDetails;
   final TextEditingController _mobile = TextEditingController();
   final TextEditingController _address = TextEditingController();
   final TextEditingController _pincode = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    initialValue();
+  }
 
+  initialValue() async{
+    CollectionReference _collectionRef = FirebaseFirestore.instance.collection('userDetails');
+    QuerySnapshot querySnapshot = await _collectionRef.where("email", isEqualTo: UserData().email).get();
+    userDetails = querySnapshot.docs.map((doc) => doc.data()).toList();
+    print(userDetails[0]["mobile"]);
+
+    _mobile.text = userDetails[0]["mobile"];
+    _address.text = userDetails[0]["address"];
+    _pincode.text = userDetails[0]["pincode"];
+    setState(() {
+
+    });
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

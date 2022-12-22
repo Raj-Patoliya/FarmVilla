@@ -152,7 +152,7 @@ class _CartScreenState extends State<CartScreen> {
                       onPressed: () async {
                         print(cartItem[index]);
                         await FirebaseFirestore.instance.collection("cart").doc(cartItem[index]).delete();
-                        await Navigator.push(context,MaterialPageRoute(builder: (context) => const CartScreen(),), );
+                        getProductForCart();
                         },
                       icon: const Icon(
                         Icons.delete,
@@ -228,7 +228,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(context),
-      body: countProduct == 0 ? const Center(child:  CircularProgressIndicator(),) :  Column(
+      body: countProduct == 0 ? const Center(child:  EmptyCart(),) :  Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(

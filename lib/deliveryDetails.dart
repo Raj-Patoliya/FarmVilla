@@ -17,9 +17,11 @@ class DeliverDetails extends StatefulWidget {
 class _DeliverDetailsState extends State<DeliverDetails> {
   final CollectionReference _userDetails = FirebaseFirestore.instance
       .collection("order");
+  final FirebaseAuth auth = FirebaseAuth.instance;
   var lst = [];
   int count =  0;
   int totalPayment = 0;
+  var userDetails;
   DateTime now = new DateTime.now();
   final TextEditingController _mobile = TextEditingController();
   final TextEditingController _address = TextEditingController();
@@ -29,6 +31,22 @@ class _DeliverDetailsState extends State<DeliverDetails> {
   void initState() {
     super.initState();
     getCartList();
+    initialValue();
+  }
+
+  initialValue() async{
+    CollectionReference _collectionRef = FirebaseFirestore.instance.collection('userDetails');
+    QuerySnapshot querySnapshot = await _collectionRef.where("email", isEqualTo: UserData().email).get();
+    userDetails = querySnapshot.docs.map((doc) => doc.data()).toList();
+    print(userDetails[0]["mobile"]);
+
+      _mobile.text = userDetails[0]["mobile"];
+      _address.text = userDetails[0]["address"];
+      _pincode.text = userDetails[0]["pincode"];
+      setState(() {
+
+      });
+
   }
   getCartList() async{
 
@@ -50,7 +68,7 @@ class _DeliverDetailsState extends State<DeliverDetails> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Profile",
+          "Delivery Details",
           style: TextStyle(
             color: Color.fromARGB(255, 201, 245, 120),
           ),
